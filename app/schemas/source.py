@@ -35,6 +35,35 @@ class SourceCreate(BaseModel):
     config: dict[str, Any] = Field(default_factory=dict)
 
 
+class SourceUpdate(BaseModel):
+    name: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=150,
+    )
+
+    source_category: SourceCategory | None = None
+    default_region: RegionCode | None = None
+
+    base_url: HttpUrl | None = None
+    endpoint_url: HttpUrl | None = None
+
+    enabled: bool | None = None
+
+    fetch_interval_minutes: int | None = Field(
+        default=None,
+        gt=0,
+    )
+
+    reputation_weight: Decimal | None = Field(
+        default=None,
+        ge=0,
+        le=1,
+    )
+
+    config: dict[str, Any] | None = None
+
+
 class SourceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

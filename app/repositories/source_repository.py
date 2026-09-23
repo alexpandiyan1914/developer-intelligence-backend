@@ -23,9 +23,8 @@ class SourceRepository:
         self,
         db: Session,
     ) -> list[Source]:
-        statement = (
-            select(Source)
-            .order_by(Source.name.asc())
+        statement = select(Source).order_by(
+            Source.name.asc()
         )
 
         return list(

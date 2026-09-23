@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.source import Source
 from app.repositories.source_repository import SourceRepository
-from app.schemas.source import SourceCreate
+from app.schemas.source import SourceCreate, SourceUpdate
 
 
 class SourceService:
@@ -47,6 +47,7 @@ class SourceService:
 
         try:
             self.repository.create(db, source)
+
             db.commit()
             db.refresh(source)
 
@@ -84,3 +85,45 @@ class SourceService:
             )
 
         return source
+
+    def update_source(
+        self,
+        db: Session,
+        source_id: uuid.UUID,
+        data: SourceUpdate,
+    ) -> Source:
+
+        source = self.repository.get_by_id(
+            db,
+            source_id,
+        )
+
+        if source is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Source not found",
+            )
+
+        update_data = data.model_dump(
+            exclude_unset=True,
+        )
+
+        for field, value in update_data.items():
+            if field in {"base_url", "endpoint_url"} and value is not None:
+                value = str(value)
+
+            setattr(source, field, value)
+
+        try:
+            db.commit()
+            db.refresh(source)
+
+            return source
+
+        except IntegrityError:
+            db.rollback()
+
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Source update conflicts with an existing record",
+            )
