@@ -21,3 +21,11 @@ class RegionCode(str, Enum):
     GLOBAL = "GLOBAL"
     INDIA = "INDIA"
     TAMIL_NADU = "TAMIL_NADU"
+    
+class ArticleProcessingState(str, Enum):
+    DISCOVERED = "DISCOVERED"
+    NORMALIZED = "NORMALIZED"
+    DEDUPLICATED = "DEDUPLICATED"
+    CLUSTERED = "CLUSTERED"
+    FAILED = "FAILED"
+    RETRYABLE = "RETRYABLE"
